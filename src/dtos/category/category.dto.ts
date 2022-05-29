@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { ICategory } from '@interfaces/category/category.interface';
 
 export class CategoryDto {
@@ -11,6 +11,7 @@ export class CategoryDto {
   @IsString()
   public color: string;
 
+  @IsOptional()
   @IsString()
   public description?: string;
 

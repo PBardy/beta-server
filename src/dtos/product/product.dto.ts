@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 import type { IProduct } from '@interfaces/product/product.interface';
 
 export class ProductDto {
@@ -8,9 +8,11 @@ export class ProductDto {
   @IsString()
   public name: string;
 
+  @IsOptional()
   @IsString()
   public thumbnail?: string;
 
+  @IsOptional()
   @IsString()
   public description?: string;
 

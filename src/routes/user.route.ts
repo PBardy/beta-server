@@ -8,6 +8,8 @@ import { UserProductsController } from '@/controllers/user-products.controller';
 import { UserLocationsController } from '@/controllers/user-locations.controller';
 import { UserCategoriesController } from '@/controllers/user-categories.controller';
 import authMiddleware from '@/middlewares/auth.middleware';
+import { CreateUserProductDto } from '@/dtos/user-product/create-user-product.dto';
+import { UpdateUserProductDto } from '@/dtos/user-product/update-user-product.dto';
 
 class UserRoute implements Routes {
   public path = '/user';
@@ -28,6 +30,14 @@ class UserRoute implements Routes {
   protected initializeRoutes() {
     // User product routes
     this.router.get(this.url('products'), authMiddleware, this.userProductsController.getAll);
+    this.router.post(this.url('products'), authMiddleware, validationMiddleware(CreateUserProductDto, 'body'), this.userProductsController.createOne);
+    this.router.put(
+      this.url('products/:uuid'),
+      authMiddleware,
+      validationMiddleware(UpdateUserProductDto, 'body'),
+      this.userProductsController.updateOne,
+    );
+    this.router.delete(this.url('products/:uuid'), authMiddleware, this.userProductsController.deleteOne);
 
     // User locations routes
     this.router.get(this.url('locations'), authMiddleware);

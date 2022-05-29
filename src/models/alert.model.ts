@@ -2,7 +2,7 @@ import type { IAlert } from '@/interfaces/alert/alert.interface';
 import { Model, ModelObject } from 'objection';
 import { v4 as uuid } from 'uuid';
 
-export class Alert extends Model implements IAlert<string> {
+export class Alert extends Model implements IAlert {
   public id: number;
   public uuid: string;
   public title: string;

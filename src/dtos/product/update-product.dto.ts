@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class UpdateProductDto {
   @IsUUID()
@@ -7,9 +7,11 @@ export class UpdateProductDto {
   @IsString()
   public name: string;
 
+  @IsOptional()
   @IsString()
   public thumbnail?: string;
 
+  @IsOptional()
   @IsString()
   public description?: string;
 }

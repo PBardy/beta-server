@@ -1,3 +1,4 @@
+import { CreateUserProductDto } from '@/dtos/user-product/create-user-product.dto';
 import { UserProductDto } from '@/dtos/user-product/user-product.dto';
 import { RequestWithUser } from '@/interfaces/auth/auth.interface';
 import { ApiResponse } from '@/interfaces/responses.interface';
@@ -38,9 +39,16 @@ export class UserProductsController {
     }
   };
 
-  public createOne = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public createOne = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
-      // delete one
+      const userId = Number(req.user.id);
+      const data: CreateUserProductDto = req.body;
+      const userProduct = await this.userProductService.createOne(userId, data);
+      const response: ApiResponse<UserProductDto> = {
+        data: UserProductDto.fromModel(userProduct),
+      };
+
+      res.json(response);
     } catch (error) {
       next(error);
     }

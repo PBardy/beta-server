@@ -1,4 +1,5 @@
 import { ERRORS } from '@/constants/errors';
+import { CreateProductDto } from '@/dtos/product/create-product.dto';
 import { CreateUserProductDto } from '@/dtos/user-product/create-user-product.dto';
 import { UpdateUserProductDto } from '@/dtos/user-product/update-user-product.dto';
 import { UpdateUserProductsDto } from '@/dtos/user-product/update-user-products.dto';
@@ -8,8 +9,11 @@ import type { IUserProduct, IUserProductWithRelations } from '@/interfaces/user-
 import { Product } from '@/models/product.model';
 import { UserProduct } from '@/models/user-product.model';
 import { isEmpty } from 'class-validator';
+import { ProductService } from './product.service';
 
 class UserProductService implements IUserProductService {
+  private productService = new ProductService();
+
   /**
    * Get a user product
    *
@@ -55,21 +59,47 @@ class UserProductService implements IUserProductService {
       throw new HttpException(422, ERRORS[422]);
     }
 
-    const product = await Product.query().where('uuid', data.uuid).first();
-    if (isEmpty(product)) {
-      throw new HttpException(404, ERRORS[404]);
+    // Use existing product data
+    if (data.productId) {
+      const product = await Product.query().where('uuid', data.productId).first();
+      if (isEmpty(product)) {
+        throw new HttpException(404, ERRORS[404]);
+      }
+
+      const userProduct = await UserProduct.query()
+        .insertAndFetch({
+          userId: userId,
+          productId: product.id,
+          createdBy: userId,
+        })
+        .withGraphJoined('user')
+        .withGraphJoined('product');
+
+      return userProduct as unknown as IUserProductWithRelations;
     }
 
-    const userProduct = await UserProduct.query()
-      .insertAndFetch({
+    // Create a new product
+    if (data.name) {
+      const productDto = new CreateProductDto();
+      productDto.name = data.name;
+      productDto.thumbnail = data.thumbnail;
+      productDto.description = data.description;
+
+      const product = await this.productService.createOne(userId, productDto);
+      const userProduct: IUserProduct = await UserProduct.query().insertAndFetch({
         userId: userId,
         productId: product.id,
         createdBy: userId,
-      })
-      .joinRelated('user')
-      .joinRelated('product');
+        bestBeforeDate: data.bestBeforeDate,
+        expiryDate: data.expiryDate,
+      });
+      //.withGraphJoined('user')
+      //.withGraphJoined('product');
 
-    return userProduct as unknown as IUserProductWithRelations;
+      return userProduct as unknown as IUserProductWithRelations;
+    }
+
+    throw new HttpException(422, ERRORS[422]);
   }
 
   /**

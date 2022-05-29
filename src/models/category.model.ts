@@ -16,13 +16,13 @@ export class Category extends Model implements ICategory {
   public static idColumn = 'id';
   public static tableName = 'categories';
 
-  public async $beforeInsert(): Promise<void> {
+  $beforeInsert() {
     this.uuid = uuid();
     this.createdAt = new Date().toISOString();
     this.updatedAt = new Date().toISOString();
   }
 
-  public async $beforeUpdate(): Promise<void> {
+  $beforeUpdate() {
     this.updatedAt = new Date().toISOString();
   }
 }

@@ -1,23 +1,27 @@
 import { IAlert } from '@/interfaces/alert/alert.interface';
-import { IsDate, IsString } from 'class-validator';
+import { IsDate, IsOptional, IsString } from 'class-validator';
 
 export class AlertDto {
   @IsString()
   public title: string;
 
+  @IsOptional()
   @IsString()
   public description?: string;
 
+  @IsOptional()
   @IsDate()
   public dateRead?: Date;
 
+  @IsOptional()
   @IsDate()
   public dateSent?: Date;
 
+  @IsOptional()
   @IsDate()
   public dateQueued?: Date;
 
-  public static fromModel<T>(model: IAlert<T>): AlertDto {
+  public static fromModel(model: IAlert): AlertDto {
     const dto = new AlertDto();
     dto.title = model.title;
     dto.description = model.description;
@@ -28,7 +32,7 @@ export class AlertDto {
     return dto;
   }
 
-  public static fromModels<T>(models: Array<IAlert<T>>): Array<AlertDto> {
-    return models.map(model => AlertDto.fromModel<T>(model));
+  public static fromModels(models: Array<IAlert>): Array<AlertDto> {
+    return models.map(model => AlertDto.fromModel(model));
   }
 }

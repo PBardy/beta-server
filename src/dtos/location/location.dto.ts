@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 import type { ILocation } from '@interfaces/location/location.interface';
 
 export class LocationDto {
@@ -11,6 +11,7 @@ export class LocationDto {
   @IsString()
   public color: string;
 
+  @IsOptional()
   @IsString()
   public description?: string;
 
